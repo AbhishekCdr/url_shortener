@@ -59,10 +59,10 @@ const UrlTable = () => {
   };
 
   return (
-    <div className="rounded-lg bg-white dark:bg-gray-800 dark:text-white">
-      <div className="overflow-x-auto rounded-lg shadow-md">
+    <div className="rounded-lg bg-white transition-all duration-500 dark:bg-[#121212] dark:text-white">
+      <div className="overflow-x-auto rounded-lg shadow-lg transition-all duration-500 dark:shadow-blue-900">
         <table className="min-w-full text-left text-sm text-gray-700 dark:text-gray-300">
-          <thead className="bg-gray-200 dark:bg-gray-700">
+          <thead className="bg-gray-200 transition-all duration-500 dark:bg-[#121212]">
             <tr>
               {isSmallScreen ? (
                 <>
@@ -155,10 +155,10 @@ const UrlTable = () => {
           fullWidth
           maxWidth="sm"
         >
-          <DialogTitle className="bg-gray-100 dark:bg-gray-800 dark:text-white">
+          <DialogTitle className="bg-gray-100 dark:bg-[#121212] dark:text-white">
             URL Details
           </DialogTitle>
-          <DialogContent className="bg-white dark:bg-gray-900 dark:text-gray-300">
+          <DialogContent className="bg-white dark:bg-[#121212] dark:text-gray-300">
             <div className="mb-4">
               <strong>URL:</strong> {selectedItem.url}
             </div>
@@ -175,7 +175,7 @@ const UrlTable = () => {
               <strong>Expiry:</strong> {selectedItem.expiry}
             </div>
           </DialogContent>
-          <DialogActions className="bg-gray-100 dark:bg-gray-800">
+          <DialogActions className="bg-gray-100 dark:bg-[#121212]">
             <Button
               onClick={() => handleDelete(selectedItem.id)}
               startIcon={<DeleteIcon />}
