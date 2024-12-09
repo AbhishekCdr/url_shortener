@@ -5,6 +5,7 @@ import authRouter from "./routes/auth.route.js";
 import urlRouter from "./routes/url.route.js";
 import { redirectUrl } from "./controllers/url.controller.js";
 import dotenv from "dotenv";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -19,8 +20,14 @@ mongoose
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send("Connected");

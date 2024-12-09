@@ -20,13 +20,13 @@ const ShortUrlSchema = mongoose.Schema({
   userName: {
     type: String,
   },
-  clicks: {
-    type: Number,
-    default: 0,
-  },
   isActive: {
     type: Boolean,
     default: true,
+  },
+  clicks: {
+    type: Number,
+    default: 0,
   },
   createdAt: {
     type: Date,

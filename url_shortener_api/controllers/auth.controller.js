@@ -39,7 +39,7 @@ export const signup = async (req, res, next) => {
     // **5. Generate JWT Token**
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET);
 
-    // **6. Respond to Client**
+    // **6. Respond to Client (Auto-Signin)**
     const { password: pass, ...rest } = newUser._doc; // Exclude password in response
     res
       .cookie("access_token", token, {
@@ -47,7 +47,10 @@ export const signup = async (req, res, next) => {
         sameSite: "strict",
       })
       .status(201)
-      .json({ message: "User created successfully", user: rest });
+      .json({
+        message: "User signed up and signed in successfully",
+        user: rest,
+      });
   } catch (error) {
     next(error);
   }
@@ -63,8 +66,7 @@ export const signin = async (req, res, next) => {
       password: Joi.string().min(6).required(),
     });
     const { error } = schema.validate(req.body);
-    if (error) return next(errorHandler(400, error.details[0].message));
-
+    if (error) return res.status(400).json("Invalid email or Password");
     const { email, password } = req.body;
 
     // Find user

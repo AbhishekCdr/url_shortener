@@ -35,6 +35,7 @@ export const createShortUrl = async (req, res) => {
       shortUrl,
       urlId,
       userName,
+      isActive: true,
       clicks: 0,
     });
 
@@ -56,15 +57,24 @@ export const redirectUrl = async (req, res) => {
   try {
     const { urlId } = req.params;
 
+    // Find the URL entry based on urlId
     const urlEntry = await Urls.findOne({ urlId });
 
+    // Check if the URL entry exists
     if (!urlEntry) {
       return res.status(404).json({ error: "Short URL not found" });
     }
 
+    // Check if the URL is active
+    if (!urlEntry.isActive) {
+      return res.status(403).json({ error: "This short URL is inactive" });
+    }
+
+    // Increment the click count and save
     urlEntry.clicks += 1;
     await urlEntry.save();
 
+    // Redirect to the long URL
     return res.redirect(urlEntry.longUrl);
   } catch (err) {
     console.error("Error during redirection:", err);
@@ -98,6 +108,37 @@ export const getUrl = async (req, res) => {
     });
   } catch (err) {
     console.error("Error retrieving URLs:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
+
+//ISACTVE_TOGGLE
+
+export const isActive = async (req, res) => {
+  try {
+    const { _id } = req.params;
+
+    // Find the URL entry by urlId
+    const urlEntry = await Urls.findOne({ _id });
+
+    // Check if the URL entry exists
+    if (!urlEntry) {
+      return res.status(404).json({ error: "Short URL not found" });
+    }
+
+    // Toggle the isActive flag
+    urlEntry.isActive = !urlEntry.isActive;
+
+    // Save the updated entry
+    await urlEntry.save();
+
+    // Respond with the updated entry
+    res.status(200).json({
+      message: `URL isActive status toggled to ${urlEntry.isActive}`,
+      updatedUrl: urlEntry,
+    });
+  } catch (err) {
+    console.error("Error toggling isActive flag:", err);
     res.status(500).json({ error: "Server error" });
   }
 };
