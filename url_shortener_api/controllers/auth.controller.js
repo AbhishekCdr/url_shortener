@@ -2,7 +2,6 @@ import bcryptjs from "bcryptjs";
 import User from "../models/user.model.js";
 import jwt from "jsonwebtoken";
 import Joi from "joi";
-import { errorHandler } from "../utils/error.js";
 
 // SIGN_UP
 
@@ -16,13 +15,13 @@ export const signup = async (req, res, next) => {
     });
 
     const { error } = schema.validate(req.body);
-    if (error) return next(errorHandler(400, error.details[0].message));
+    if (error) return res.status(400).json(error);
 
     const { username, email, password } = req.body;
 
     // **2. Check for Existing User**
     const existingUser = await User.findOne({ email });
-    if (existingUser) return next(errorHandler(409, "User already exists."));
+    if (existingUser) return res.status(400).json("User already exists");
 
     // **3. Hash Password**
     const hashedPassword = bcryptjs.hashSync(password, 10);
@@ -71,8 +70,7 @@ export const signin = async (req, res, next) => {
 
     // Find user
     const validUser = await User.findOne({ email });
-    if (!validUser)
-      return next(errorHandler(401, "Invalid email or password."));
+    if (!validUser) return res.status(401).json("Invalid email or password");
 
     // Verify password
     const validPassword = bcryptjs.compareSync(password, validUser.password);
@@ -82,7 +80,7 @@ export const signin = async (req, res, next) => {
         validUser.isLocked = true;
       }
       await validUser.save();
-      return next(errorHandler(401, "Invalid email or password."));
+      return res.status(401).json("Invalid email or password");
     }
 
     // Generate tokens
