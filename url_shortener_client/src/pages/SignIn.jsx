@@ -1,13 +1,13 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
+import { enqueueSnackbar } from "notistack";
 
 const SignIn = (props) => {
+  const { SignUpOpen, handleClose, userName } = props;
   // Validation schema
   const validationSchema = Yup.object({
-    username: Yup.string()
-      .min(3, "Username must be at least 3 characters")
-      .required("Username is required"),
     email: Yup.string()
       .email("Invalid email format")
       .required("Email is required"),
@@ -18,17 +18,43 @@ const SignIn = (props) => {
 
   // Initial values
   const initialValues = {
-    username: "",
     email: "",
     password: "",
   };
 
-  // Submit handler
-  const handleSubmit = (values) => {
-    console.log("Form Data:", values);
-  };
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    console.log("submit");
 
-  const { SignUpOpen } = props;
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/v1/api/auth/signin`,
+        values,
+        { withCredentials: true },
+      );
+      // console.log("Signin successful:", response.data);
+
+      localStorage.removeItem("username");
+      localStorage.setItem("username", response.data.username);
+      resetForm();
+      handleClose();
+      SignUpOpen();
+      enqueueSnackbar("Login successful!", { variant: "success" });
+      userName();
+    } catch (error) {
+      console.error(
+        "Error during signup:",
+        error.response?.data || error.message,
+      );
+
+      enqueueSnackbar(
+        "Login failed. " + (error.response?.data || "Please try again."),
+        { variant: "error" },
+      );
+      // alert("Signup failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   return (
     <div className="relative mx-auto flex max-w-md flex-col gap-6 rounded bg-white p-6 shadow-md dark:bg-slate-800 dark:text-white">
@@ -45,23 +71,23 @@ const SignIn = (props) => {
             {/* Username */}
             <div className="mb-4">
               <label
-                htmlFor="username"
+                htmlFor="email"
                 className="block text-sm font-medium text-gray-700 dark:text-white"
               >
-                Username
+                email
               </label>
               <Field
                 type="text"
-                id="username"
-                name="username"
+                id="email"
+                name="email"
                 className="mt-1 w-full rounded border border-gray-300 p-2 dark:text-black"
-                onFocus={() => setFieldTouched("username")}
+                onFocus={() => setFieldTouched("email")}
               />
               <ErrorMessage
                 name="username"
                 component="div"
                 className={`mt-1 text-sm text-red-500 ${
-                  touched.username || errors.username ? "block" : "hidden"
+                  touched.email || errors.email ? "block" : "hidden"
                 }`}
               />
             </div>

@@ -1,9 +1,11 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+import axios from "axios";
+import { enqueueSnackbar } from "notistack";
 
 const SignUp = (props) => {
-  const { SignUpOpen } = props;
+  const { SignUpOpen, handleClose } = props;
   // Validation schema
   const validationSchema = Yup.object({
     username: Yup.string()
@@ -24,9 +26,35 @@ const SignUp = (props) => {
     password: "",
   };
 
-  // Submit handler
-  const handleSubmit = (values) => {
-    console.log("Form Data:", values);
+  const handleSubmit = async (values, { setSubmitting, resetForm }) => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/v1/api/auth/signup`,
+        values,
+        { withCredentials: true },
+      );
+      console.log("Signup successful:", response.data);
+
+      localStorage.setItem("username", response.data.user.username);
+      resetForm();
+      handleClose();
+      SignUpOpen();
+      enqueueSnackbar(`Register Successful`, { variant: "success" });
+    } catch (error) {
+      console.error(
+        "Error during signup:",
+        error.response?.data || error.message,
+      );
+      enqueueSnackbar(
+        `Error: ${error.response?.data || "Error while signup"}`,
+        {
+          variant: "error",
+        },
+      );
+      // alert("Signup failed. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import { Box, Button, TextField } from "@mui/material";
-import LoadingSvgDark from "./Animation/LoadingSvgDark";
-import LoadingSvgLight from "./Animation/LoadingSvgLight";
 import axios from "axios";
-import { SnackbarProvider, enqueueSnackbar } from "notistack";
+import { enqueueSnackbar } from "notistack";
 
 const InputField = () => {
   const [inputValue, setInputValue] = useState("");
@@ -37,11 +35,15 @@ const InputField = () => {
         payload,
       );
 
-      if (response.status === 201 || 200) {
-        enqueueSnackbar("Short URL created successfully", {
+      if (response.status === 201) {
+        enqueueSnackbar(`${response.data.message}`, {
           variant: "success",
         });
         console.log("Short URL created successfully:", response.data);
+      } else if (response.status === 200) {
+        enqueueSnackbar(`${response.data.message}`, {
+          variant: "info",
+        });
       } else {
         setError("Failed to create short URL. Please try again.");
       }
@@ -95,20 +97,9 @@ const InputField = () => {
           className="!bg-green-700 text-white hover:!bg-red-600"
           size="large"
         >
-          Convert 🚀
+          <span>Convert 🚀</span>
         </Button>
       </form>
-      <div className="h-5 w-full max-w-4xl items-center text-center">
-        <SnackbarProvider
-          autoHideDuration={3000}
-          anchorOrigin={{ vertical: "top", horizontal: "center" }}
-        />
-        {/* {error && (
-          <p className="text-center text-sm text-red-500 dark:text-white">
-            {error}
-          </p>
-        )} */}
-      </div>
     </div>
   );
 };

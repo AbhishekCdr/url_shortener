@@ -8,16 +8,18 @@ import TransitionModal from "../Modal/TransitionModal.jsx";
 import SignUp from "./SignUp.jsx";
 import SignIn from "./SignIn.jsx";
 import axios from "axios";
+import { SnackbarProvider, enqueueSnackbar } from "notistack";
 
 const Home = () => {
   const [open, setOpen] = useState(false);
   const [login, setLogin] = useState(true);
+  const [user, setUser] = useState(null);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const SignUpOpen = () => setLogin((old) => !old);
-  let user = null;
-  user = localStorage.getItem("username");
+
+  const userName = () => setUser(localStorage.getItem("username"));
 
   const handleSignout = async () => {
     try {
@@ -27,11 +29,16 @@ const Home = () => {
       );
       console.log(response.data);
 
-      alert("You have been logged out successfully!");
+      // alert("You have been logged out successfully!");
+
+      enqueueSnackbar(`${response.data}`, { variant: "success" });
       localStorage.removeItem("username");
-      window.location.reload();
+      setUser(null);
     } catch (error) {
-      console.error("Error during signout:", error);
+      enqueueSnackbar(`Error: ${error?.message || "Error while logging out"}`, {
+        variant: "error",
+      });
+      // console.error("Error during signout:", error?.message);
     }
   };
 
@@ -40,7 +47,7 @@ const Home = () => {
       <div className="flex items-center gap-10 self-end">
         <div className="dark:text-white">
           <div className="flex items-center gap-3">
-            {user ? (
+            {!user?.startsWith("system") && user ? (
               <span>
                 Welcome <span className="text-lg font-semibold">{user}</span>
               </span>
@@ -54,7 +61,7 @@ const Home = () => {
                 LogIn
               </Button>
             )}
-            {user && (
+            {user && !user.startsWith("system") && (
               <Button
                 size="medium"
                 variant="contained"
@@ -68,7 +75,11 @@ const Home = () => {
 
           <TransitionModal open={open} handleClose={handleClose}>
             {login ? (
-              <SignIn SignUpOpen={SignUpOpen} handleClose={handleClose} />
+              <SignIn
+                SignUpOpen={SignUpOpen}
+                handleClose={handleClose}
+                userName={userName}
+              />
             ) : (
               <SignUp SignUpOpen={SignUpOpen} handleClose={handleClose} />
             )}
@@ -87,6 +98,10 @@ const Home = () => {
         <InputField />
       </div>
       <UrlTable />
+      <SnackbarProvider
+        autoHideDuration={3000}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      />
     </div>
   );
 };
