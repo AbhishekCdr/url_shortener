@@ -34,7 +34,7 @@ const ShortUrlSchema = mongoose.Schema({
   },
   expiresAt: {
     type: Date,
-    default: null,
+    default: () => new Date(Date.now() + 182 * 24 * 60 * 60 * 1000),
   },
 });
 

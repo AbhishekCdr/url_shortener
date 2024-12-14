@@ -16,7 +16,6 @@ export const createShortUrl = async (req, res) => {
       existingUrl = await Urls.findOne({ longUrl, userName });
     }
 
-    // If an existing URL is found, return it
     if (existingUrl) {
       return res.status(200).json({
         message: "Short URL already exists for the given URL and user",
@@ -24,10 +23,9 @@ export const createShortUrl = async (req, res) => {
       });
     }
 
-    // Generate a unique short ID
     const urlId = nanoid(8);
 
-    const baseUrl = process.env.BASE_URL || "http://localhost:3000"; // Replace with your domain
+    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
     const shortUrl = `${baseUrl}/${urlId}`;
 
     const newShortUrl = new Urls({
