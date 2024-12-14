@@ -1,28 +1,62 @@
 import React, { useState } from "react";
 import { Box, Button, TextField } from "@mui/material";
+import LoadingSvgDark from "./Animation/LoadingSvgDark";
+import LoadingSvgLight from "./Animation/LoadingSvgLight";
+import axios from "axios";
+import { SnackbarProvider, enqueueSnackbar } from "notistack";
 
 const InputField = () => {
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState("");
 
-  // URL validation regex
-  const urlRegex = /^(https?:\/\/)?([\da-z.-]+)\.([a-z.]{2,6})([/\w .-]*)*\/?$/;
+  const handleSubmit = async (event) => {
+    event.preventDefault(); // Prevent form from reloading the page
+    const urlRegex = /^(https?:\/\/)?([\w.-]+)+(:\d+)?(\/([\w/._-]*)?)?$/; // Simple URL regex
 
-  const handleSubmit = (event) => {
-    event.preventDefault(); // Prevents form from reloading the page
     if (!urlRegex.test(inputValue)) {
       setError("Please enter a valid website URL.");
+      return;
     } else {
       setError("");
-      alert("URL is valid: " + inputValue);
-      // Add your form submission logic here
+    }
+
+    let username = localStorage.getItem("username");
+    if (!username) {
+      username = `system_${Math.random().toString(36).substring(2, 10)}`; // Generate a unique small username
+      localStorage.setItem("username", username);
+    }
+
+    const payload = {
+      longUrl: inputValue,
+      userName: username,
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/v1/api/url/create-short-url",
+        payload,
+      );
+
+      if (response.status === 201 || 200) {
+        enqueueSnackbar("Short URL created successfully", {
+          variant: "success",
+        });
+        console.log("Short URL created successfully:", response.data);
+      } else {
+        setError("Failed to create short URL. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error creating short URL:", error);
+      setError(
+        "An error occurred while creating the short URL. Please try again later.",
+      );
     }
   };
 
   return (
-    <div className="first-line flex flex-col items-center space-y-2 px-4">
+    <div className="first-line flex w-screen flex-col items-center space-y-2 px-4">
       <form
-        className="flex w-96 max-w-4xl items-center space-x-4"
+        className="flex w-full items-center space-x-4 sm:w-1/2 md:w-1/2 lg:w-1/2"
         onSubmit={handleSubmit}
       >
         <Box sx={{ flexGrow: 1 }}>
@@ -30,6 +64,7 @@ const InputField = () => {
             id="outlined-basic"
             label="Enter URL"
             variant="filled"
+            size="normal"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             fullWidth
@@ -57,17 +92,22 @@ const InputField = () => {
         <Button
           type="submit"
           variant="contained"
-          className="!bg-green-700 text-white hover:!bg-green-800"
+          className="!bg-green-700 text-white hover:!bg-red-600"
           size="large"
         >
-          Convert
+          Convert 🚀
         </Button>
       </form>
-      <div className="h-5 w-full max-w-4xl self-start">
-        {/* Reserve space for the error message */}
-        {error && (
-          <p className="text-sm text-red-500 dark:text-white">{error}</p>
-        )}
+      <div className="h-5 w-full max-w-4xl items-center text-center">
+        <SnackbarProvider
+          autoHideDuration={3000}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        />
+        {/* {error && (
+          <p className="text-center text-sm text-red-500 dark:text-white">
+            {error}
+          </p>
+        )} */}
       </div>
     </div>
   );
