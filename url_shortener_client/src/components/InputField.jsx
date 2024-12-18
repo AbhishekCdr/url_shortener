@@ -3,20 +3,25 @@ import { Box, Button, TextField } from "@mui/material";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 
-const InputField = () => {
+const InputField = (props) => {
+  const { fetchData } = props;
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent form from reloading the page
-    const urlRegex = /^(https?:\/\/)?([\w.-]+)+(:\d+)?(\/([\w/._-]*)?)?$/; // Simple URL regex
+    const urlRegex = /^(ftp|http|https):\/\/[^ "]+$/;
 
     if (!urlRegex.test(inputValue)) {
       setError("Please enter a valid website URL.");
+      enqueueSnackbar("Please enter a valid website URL.", {
+        variant: "error",
+      });
       return;
     } else {
       setError("");
     }
+    setError("");
 
     let username = localStorage.getItem("username");
     if (!username) {
@@ -40,15 +45,20 @@ const InputField = () => {
           variant: "success",
         });
         console.log("Short URL created successfully:", response.data);
+        fetchData();
       } else if (response.status === 200) {
         enqueueSnackbar(`${response.data.message}`, {
           variant: "info",
         });
       } else {
+        enqueueSnackbar;
         setError("Failed to create short URL. Please try again.");
       }
     } catch (error) {
       console.error("Error creating short URL:", error);
+      enqueueSnackbar(error.message, {
+        variant: "error",
+      });
       setError(
         "An error occurred while creating the short URL. Please try again later.",
       );

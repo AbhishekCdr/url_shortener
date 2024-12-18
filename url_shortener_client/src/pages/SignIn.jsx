@@ -5,7 +5,7 @@ import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 
 const SignIn = (props) => {
-  const { SignUpOpen, handleClose, userName } = props;
+  const { SignUpOpen, handleClose, userName, fetchData } = props;
   // Validation schema
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -37,9 +37,10 @@ const SignIn = (props) => {
       localStorage.setItem("username", response.data.username);
       resetForm();
       handleClose();
-      SignUpOpen();
+      // SignUpOpen();
       enqueueSnackbar("Login successful!", { variant: "success" });
       userName();
+      fetchData();
     } catch (error) {
       console.error(
         "Error during signup:",

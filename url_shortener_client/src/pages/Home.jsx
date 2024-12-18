@@ -1,5 +1,5 @@
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ThemeToggleButton from "../components/ThemeToggleButton.jsx";
 import Button from "@mui/material/Button";
 import UrlTable from "../components/UrlTable.jsx";
@@ -13,7 +13,10 @@ import { SnackbarProvider, enqueueSnackbar } from "notistack";
 const Home = () => {
   const [open, setOpen] = useState(false);
   const [login, setLogin] = useState(true);
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(localStorage.getItem("username"));
+  const [data, setData] = useState([]);
+  const [cookie, setCookie] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -29,18 +32,55 @@ const Home = () => {
       );
       console.log(response.data);
 
-      // alert("You have been logged out successfully!");
-
       enqueueSnackbar(`${response.data}`, { variant: "success" });
       localStorage.removeItem("username");
       setUser(null);
+      fetchData();
     } catch (error) {
-      enqueueSnackbar(`Error: ${error?.message || "Error while logging out"}`, {
+      enqueueSnackbar(`${error?.message || "Error while logging out"}`, {
         variant: "error",
       });
-      // console.error("Error during signout:", error?.message);
     }
   };
+
+  const fetchData = async () => {
+    setIsLoading(true);
+    const userName = localStorage.getItem("username") || "null";
+
+    if (userName === "null") {
+      console.log("No username found");
+      setData([]);
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      setCookie(document.cookie);
+
+      const url = cookie
+        ? `http://localhost:3000/v1/api/url/get-all-short-urls-user/${userName}`
+        : `http://localhost:3000/v1/api/url/get-all-short-urls/${userName}`;
+
+      const response = await axios.get(url, {
+        withCredentials: !!cookie,
+      });
+
+      setData(response.data.urls);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      enqueueSnackbar(error.message, {
+        variant: "error",
+      });
+      // setError("Failed to fetch data. Please try again later.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
 
   return (
     <div className="bg-dark-svg flex w-screen flex-grow flex-col items-center gap-12 p-5">
@@ -79,9 +119,14 @@ const Home = () => {
                 SignUpOpen={SignUpOpen}
                 handleClose={handleClose}
                 userName={userName}
+                fetchData={fetchData}
               />
             ) : (
-              <SignUp SignUpOpen={SignUpOpen} handleClose={handleClose} />
+              <SignUp
+                SignUpOpen={SignUpOpen}
+                handleClose={handleClose}
+                fetchData={fetchData}
+              />
             )}
           </TransitionModal>
         </div>
@@ -95,12 +140,14 @@ const Home = () => {
         URL Shortener
       </h1>
       <div>
-        <InputField />
+        <InputField fetchData={fetchData} />
       </div>
-      <UrlTable />
+      <UrlTable data={data} isLoading={isLoading} fetchData={fetchData} />
       <SnackbarProvider
         autoHideDuration={3000}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        disableWindowBlurListener={true}
+        preventDuplicate={true}
       />
     </div>
   );
