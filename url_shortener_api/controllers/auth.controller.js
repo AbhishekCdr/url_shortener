@@ -42,7 +42,6 @@ export const signup = async (req, res, next) => {
     const { password: pass, ...rest } = newUser._doc; // Exclude password in response
     res
       .cookie("access_token", token, {
-        httpOnly: true,
         sameSite: "strict",
       })
       .status(201)
@@ -88,7 +87,6 @@ export const signin = async (req, res, next) => {
     const { password: pass, ...rest } = validUser._doc;
 
     res.cookie("access_token", token, {
-      httpOnly: true,
       sameSite: "strict",
     });
     res.status(200).json(rest);
