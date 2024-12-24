@@ -4,7 +4,7 @@ import axios from "axios";
 import { enqueueSnackbar } from "notistack";
 
 const InputField = (props) => {
-  const { fetchData } = props;
+  const { fetchData, setHighlight } = props;
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState("");
 
@@ -44,12 +44,20 @@ const InputField = (props) => {
         enqueueSnackbar(`${response.data.message}`, {
           variant: "success",
         });
-        console.log("Short URL created successfully:", response.data);
+        // console.log("Short URL created successfully:", response.data);
+        setInputValue("");
         fetchData();
       } else if (response.status === 200) {
         enqueueSnackbar(`${response.data.message}`, {
-          variant: "info",
+          variant: "warning",
         });
+
+        setInputValue("");
+        setHighlight(response.data.shortUrl);
+        setTimeout(() => {
+          setHighlight("");
+        }, 3000);
+        // link already present
       } else {
         enqueueSnackbar;
         setError("Failed to create short URL. Please try again.");
