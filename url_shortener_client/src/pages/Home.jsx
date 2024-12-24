@@ -9,6 +9,7 @@ import SignUp from "./SignUp.jsx";
 import SignIn from "./SignIn.jsx";
 import axios from "axios";
 import { SnackbarProvider, enqueueSnackbar } from "notistack";
+import Logo from "../assets/Logo.jsx";
 
 const Home = () => {
   const [open, setOpen] = useState(false);
@@ -17,12 +18,17 @@ const Home = () => {
   const [data, setData] = useState([]);
   const [cookie, setCookie] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [highlightedId, setHighlightedId] = useState("null");
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const SignUpOpen = () => setLogin((old) => !old);
 
   const userName = () => setUser(localStorage.getItem("username"));
+
+  const setHighlight = (url) => {
+    setHighlightedId(url);
+  };
 
   const handleSignout = async () => {
     try {
@@ -48,7 +54,7 @@ const Home = () => {
     const userName = localStorage.getItem("username") || "null";
 
     if (userName === "null") {
-      console.log("No username found");
+      console.log("No User");
       setData([]);
       setIsLoading(false);
       return;
@@ -56,7 +62,6 @@ const Home = () => {
 
     try {
       setCookie(document.cookie);
-
       const url = cookie
         ? `http://localhost:3000/v1/api/url/get-all-short-urls-user/${userName}`
         : `http://localhost:3000/v1/api/url/get-all-short-urls/${userName}`;
@@ -65,14 +70,19 @@ const Home = () => {
         withCredentials: !!cookie,
       });
 
-      setData(response.data.urls);
+      // console.log(response);
+
+      if (response.data.urls) {
+        setData(response.data.urls);
+        return;
+      }
+      setData([]);
       setIsLoading(false);
     } catch (error) {
       console.error("Error fetching data:", error);
       enqueueSnackbar(error.message, {
         variant: "error",
       });
-      // setError("Failed to fetch data. Please try again later.");
     } finally {
       setIsLoading(false);
     }
@@ -112,7 +122,6 @@ const Home = () => {
               </Button>
             )}
           </div>
-
           <TransitionModal open={open} handleClose={handleClose}>
             {login ? (
               <SignIn
@@ -136,13 +145,18 @@ const Home = () => {
         </div>
       </div>
 
-      <h1 className="text-4xl font-semibold text-black dark:text-white">
-        URL Shortener
-      </h1>
-      <div>
-        <InputField fetchData={fetchData} />
+      <div className="text-4xl font-semibold text-black dark:text-white">
+        <Logo />
       </div>
-      <UrlTable data={data} isLoading={isLoading} fetchData={fetchData} />
+      <div>
+        <InputField fetchData={fetchData} setHighlight={setHighlight} />
+      </div>
+      <UrlTable
+        data={data}
+        isLoading={isLoading}
+        fetchData={fetchData}
+        highlightedId={highlightedId}
+      />
       <SnackbarProvider
         autoHideDuration={3000}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
