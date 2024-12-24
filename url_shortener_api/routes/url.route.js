@@ -2,10 +2,10 @@ import express from "express";
 import {
   createShortUrl,
   getUrl,
-  deleteUrl,
   isActive,
 } from "../controllers/url.controller.js";
 import { verifyToken } from "../utils/verifyUser.js";
+import { deleteUrl } from "../utils/redisConnect.js";
 
 const router = express.Router();
 

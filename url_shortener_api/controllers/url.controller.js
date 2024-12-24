@@ -18,12 +18,23 @@ export const createShortUrl = async (req, res) => {
 
     if (existingUrl) {
       return res.status(200).json({
-        message: "Short URL already exists for the given URL and user",
+        message: "Short URL already exists for the given URL",
         shortUrl: existingUrl.shortUrl,
       });
     }
 
-    const urlId = nanoid(8);
+    let urlId = nanoid(8);
+
+    const shortIds = await Urls.find({ urlId });
+
+    while (shortIds.length > 0) {
+      urlId = nanoid(8);
+      const checkExisting = await Urls.find({ urlId });
+
+      if (checkExisting.length === 0) {
+        break;
+      }
+    }
 
     const baseUrl = process.env.BASE_URL || "http://localhost:3000";
     const shortUrl = `${baseUrl}/${urlId}`;
@@ -49,36 +60,36 @@ export const createShortUrl = async (req, res) => {
   }
 };
 
-// REDIRECT_URL
+// // REDIRECT_URL
 
-export const redirectUrl = async (req, res) => {
-  try {
-    const { urlId } = req.params;
+// export const redirectUrl = async (req, res) => {
+//   try {
+//     const { urlId } = req.params;
 
-    // Find the URL entry based on urlId
-    const urlEntry = await Urls.findOne({ urlId });
+//     // Find the URL entry based on urlId
+//     const urlEntry = await Urls.findOne({ urlId });
 
-    // Check if the URL entry exists
-    if (!urlEntry) {
-      return res.status(404).json({ error: "Short URL not found" });
-    }
+//     // Check if the URL entry exists
+//     if (!urlEntry) {
+//       return res.status(404).json({ error: "Short URL not found" });
+//     }
 
-    // Check if the URL is active
-    if (!urlEntry.isActive) {
-      return res.status(403).json({ error: "This short URL is inactive" });
-    }
+//     // Check if the URL is active
+//     if (!urlEntry.isActive) {
+//       return res.status(403).json({ error: "This short URL is inactive" });
+//     }
 
-    // Increment the click count and save
-    urlEntry.clicks += 1;
-    await urlEntry.save();
+//     // Increment the click count and save
+//     urlEntry.clicks += 1;
+//     await urlEntry.save();
 
-    // Redirect to the long URL
-    return res.redirect(urlEntry.longUrl);
-  } catch (err) {
-    console.error("Error during redirection:", err);
-    res.status(500).json({ error: "Server error" });
-  }
-};
+//     // Redirect to the long URL
+//     return res.redirect(urlEntry.longUrl);
+//   } catch (err) {
+//     console.error("Error during redirection:", err);
+//     res.status(500).json({ error: "Server error" });
+//   }
+// };
 
 // GET_ALL_LINKS
 
@@ -96,7 +107,7 @@ export const getUrl = async (req, res) => {
 
     // Check if any URLs are found
     if (urls.length === 0) {
-      return res.status(404).json({ message: "No URLs found for this user" });
+      return res.status(201).json({ message: "No URLs found for this user" });
     }
 
     // Return the retrieved URLs
@@ -141,26 +152,26 @@ export const isActive = async (req, res) => {
   }
 };
 
-export const deleteUrl = async (req, res) => {
-  try {
-    const { _id } = req.params;
+// export const deleteUrl = async (req, res) => {
+//   try {
+//     const { _id } = req.params;
 
-    if (!_id || typeof _id != "string") {
-      return res.status(400).json({ error: "Invalid or missing urlId" });
-    }
+//     if (!_id || typeof _id != "string") {
+//       return res.status(400).json({ error: "Invalid or missing urlId" });
+//     }
 
-    const deletedUrl = await Urls.findOneAndDelete({ _id });
+//     const deletedUrl = await Urls.findOneAndDelete({ _id });
 
-    if (!deleteUrl) {
-      return res.status(404).json({ error: "URL not found" });
-    }
+//     if (!deleteUrl) {
+//       return res.status(404).json({ error: "URL not found" });
+//     }
 
-    res.status(200).json({
-      message: "URL deleted succesfully",
-      deletedUrl,
-    });
-  } catch (error) {
-    console.log("Error deleting url", error);
-    res.status(500).json({ error: "Server Error" });
-  }
-};
+//     res.status(200).json({
+//       message: "URL deleted succesfully",
+//       deletedUrl,
+//     });
+//   } catch (error) {
+//     console.log("Error deleting url", error);
+//     res.status(500).json({ error: "Server Error" });
+//   }
+// };

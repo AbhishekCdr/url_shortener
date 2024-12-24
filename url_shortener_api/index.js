@@ -3,9 +3,10 @@ import cors from "cors";
 import mongoose from "mongoose";
 import authRouter from "./routes/auth.route.js";
 import urlRouter from "./routes/url.route.js";
-import { redirectUrl } from "./controllers/url.controller.js";
+// import { redirectUrl } from "./controllers/url.controller.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
+import { getRedis } from "./utils/redisConnect.js";
 
 dotenv.config();
 
@@ -35,7 +36,7 @@ app.get("/", (req, res) => {
 
 app.use("/v1/api/auth", authRouter);
 app.use("/v1/api/url", urlRouter);
-app.get("/:urlId", redirectUrl);
+app.get("/:urlId", getRedis);
 
 app.listen(3000, () => {
   console.log("Listening at PORT 3000");
