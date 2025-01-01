@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
+import { ThemeContext } from "../ThemeContext";
 
 const SignUp = (props) => {
   const { SignUpOpen, handleClose, userName, fetchData } = props;
+  const { url } = useContext(ThemeContext);
   // Validation schema
   const validationSchema = Yup.object({
     username: Yup.string()
@@ -28,12 +30,9 @@ const SignUp = (props) => {
 
   const handleSubmit = async (values, { setSubmitting, resetForm }) => {
     try {
-      const response = await axios.post(
-        `http://localhost:3000/v1/api/auth/signup`,
-        values,
-        { withCredentials: true },
-      );
-      console.log("Signup successful:", response.data);
+      const response = await axios.post(`${url}/v1/api/auth/signup`, values, {
+        withCredentials: true,
+      });
 
       localStorage.setItem("username", response.data.user.username);
       resetForm();

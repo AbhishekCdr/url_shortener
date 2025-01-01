@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { enqueueSnackbar } from "notistack";
+import { ThemeContext } from "../ThemeContext";
 
 const SignIn = (props) => {
   const { SignUpOpen, handleClose, userName, fetchData } = props;
+  const { url } = useContext(ThemeContext);
   // Validation schema
   const validationSchema = Yup.object({
     email: Yup.string()
@@ -26,11 +28,9 @@ const SignIn = (props) => {
     console.log("submit");
 
     try {
-      const response = await axios.post(
-        `http://localhost:3000/v1/api/auth/signin`,
-        values,
-        { withCredentials: true },
-      );
+      const response = await axios.post(`${url}/v1/api/auth/signin`, values, {
+        withCredentials: true,
+      });
       // console.log("Signin successful:", response.data);
 
       localStorage.removeItem("username");
@@ -123,7 +123,7 @@ const SignIn = (props) => {
               disabled={isSubmitting}
               className="w-full rounded bg-blue-500 py-2 text-white transition duration-200 hover:bg-blue-600"
             >
-              {isSubmitting ? "Signing up..." : "LogIn"}
+              {isSubmitting ? "Logging In..." : "LogIn"}
             </button>
           </Form>
         )}
