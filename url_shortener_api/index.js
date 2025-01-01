@@ -6,7 +6,7 @@ import urlRouter from "./routes/url.route.js";
 // import { redirectUrl } from "./controllers/url.controller.js";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
-import { getRedis } from "./utils/redisConnect.js";
+import { getRedis } from "./controllers/redis.controller.js";
 
 dotenv.config();
 

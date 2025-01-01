@@ -60,36 +60,56 @@ export const createShortUrl = async (req, res) => {
   }
 };
 
-// // REDIRECT_URL
+export const createCustomUrl = async (req, res) => {
+  try {
+    const { longUrl, userName, urlId } = req.body;
 
-// export const redirectUrl = async (req, res) => {
-//   try {
-//     const { urlId } = req.params;
+    if (!longUrl || typeof longUrl !== "string") {
+      return res.status(400).json({ error: "Invalid or missing longUrl" });
+    }
 
-//     // Find the URL entry based on urlId
-//     const urlEntry = await Urls.findOne({ urlId });
+    // If already exist in db fir username
+    let existingUrl;
+    if (userName) {
+      existingUrl = await Urls.findOne({ longUrl, userName });
+    }
 
-//     // Check if the URL entry exists
-//     if (!urlEntry) {
-//       return res.status(404).json({ error: "Short URL not found" });
-//     }
+    if (existingUrl) {
+      return res.status(200).json({
+        message: "Short URL already exists for the given URL",
+        shortUrl: existingUrl.shortUrl,
+      });
+    }
 
-//     // Check if the URL is active
-//     if (!urlEntry.isActive) {
-//       return res.status(403).json({ error: "This short URL is inactive" });
-//     }
+    const shortIds = await Urls.find({ urlId });
 
-//     // Increment the click count and save
-//     urlEntry.clicks += 1;
-//     await urlEntry.save();
+    if (shortIds.length > 0) {
+      return res.status(400).json({ error: "Custom URL ID already exists" });
+    }
 
-//     // Redirect to the long URL
-//     return res.redirect(urlEntry.longUrl);
-//   } catch (err) {
-//     console.error("Error during redirection:", err);
-//     res.status(500).json({ error: "Server error" });
-//   }
-// };
+    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+    const shortUrl = `${baseUrl}/${urlId}`;
+
+    const newShortUrl = new Urls({
+      longUrl,
+      shortUrl,
+      urlId,
+      userName,
+      isActive: true,
+      clicks: 0,
+    });
+
+    await newShortUrl.save();
+
+    res.status(201).json({
+      message: "Custom Short URL created successfully",
+      shortUrl,
+    });
+  } catch (err) {
+    console.error("Error creating short URL:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+};
 
 // GET_ALL_LINKS
 
@@ -152,26 +172,26 @@ export const isActive = async (req, res) => {
   }
 };
 
-// export const deleteUrl = async (req, res) => {
-//   try {
-//     const { _id } = req.params;
+export const changeExpiry = async (req, res) => {
+  try {
+    const { _id } = req.params;
+    const urlEntry = await Urls.findOne({ _id });
 
-//     if (!_id || typeof _id != "string") {
-//       return res.status(400).json({ error: "Invalid or missing urlId" });
-//     }
+    if (!urlEntry) {
+      return res.status(404).json({ error: "Short URL not found" });
+    }
 
-//     const deletedUrl = await Urls.findOneAndDelete({ _id });
+    const { expiresAt } = req.body;
 
-//     if (!deleteUrl) {
-//       return res.status(404).json({ error: "URL not found" });
-//     }
+    urlEntry.expiresAt = expiresAt;
 
-//     res.status(200).json({
-//       message: "URL deleted succesfully",
-//       deletedUrl,
-//     });
-//   } catch (error) {
-//     console.log("Error deleting url", error);
-//     res.status(500).json({ error: "Server Error" });
-//   }
-// };
+    await urlEntry.save();
+
+    res.status(200).json({
+      message: "Expiry date updated successfully",
+      updatedUrl: urlEntry,
+    });
+  } catch (error) {
+    res.status(500).json({ error: "Server Error" });
+  }
+};
