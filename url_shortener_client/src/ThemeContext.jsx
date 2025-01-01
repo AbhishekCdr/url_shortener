@@ -6,6 +6,7 @@ export const ThemeContext = createContext();
 // Create a provider component
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const url = "http://localhost:3000";
 
   useEffect(() => {
     if (theme === "dark") {
@@ -21,7 +22,7 @@ export const ThemeProvider = ({ children }) => {
   };
 
   return (
-    <ThemeContext.Provider value={{ theme, toggleTheme }}>
+    <ThemeContext.Provider value={{ theme, toggleTheme, url }}>
       {children}
     </ThemeContext.Provider>
   );
