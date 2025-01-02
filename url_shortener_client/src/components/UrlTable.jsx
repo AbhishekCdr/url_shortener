@@ -115,10 +115,10 @@ const UrlTable = (props) => {
 
   return (
     <>
-      <div className="flex w-screen flex-col rounded-lg bg-white transition-all duration-500 dark:bg-[#121212] dark:text-white md:w-11/12">
-        <div className="overflow-x-auto rounded-lg shadow-lg transition-all duration-500 dark:shadow-blue-900">
-          <table className="min-w-full text-center text-sm text-gray-700 dark:text-gray-300">
-            <thead className="bg-gray-200 text-center transition-all duration-500 dark:bg-[#000000]">
+      <div className="relative flex max-h-96 w-screen flex-col overflow-y-auto rounded-lg bg-white transition-all duration-500 dark:bg-[#121212] dark:text-white md:w-11/12">
+        <div className="relative overflow-auto overflow-y-auto rounded-lg shadow-lg transition-all duration-500 dark:shadow-blue-900">
+          <table className="relative min-w-full text-center text-xs text-gray-700 dark:text-gray-300 md:text-sm">
+            <thead className="sticky top-0 z-10 bg-gray-200 text-center transition-all duration-500 dark:bg-[#000000]">
               <tr>
                 {isSmallScreen ? (
                   <>
@@ -180,7 +180,7 @@ const UrlTable = (props) => {
                           >
                             {item.shortUrl}
                           </div>
-                          <div className="line-clamp-1 block w-32 text-left text-gray-500">
+                          <div className="block w-32 truncate text-left text-gray-500">
                             {item.longUrl}
                           </div>
                         </td>
@@ -206,7 +206,7 @@ const UrlTable = (props) => {
                             ></span>
                           </span>
                           <span
-                            className="line-clamp-1 block w-32 text-left"
+                            className="block w-32 truncate text-left"
                             title={item.longUrl}
                           >
                             {item.longUrl}

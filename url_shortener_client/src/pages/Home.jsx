@@ -174,7 +174,7 @@ const Home = () => {
         />
       </div>
 
-      <div className="flex w-screen flex-grow flex-col items-center gap-3 p-5">
+      <div className="flex w-screen flex-col items-center gap-3 p-5">
         <Box sx={{ "& > :not(style)": { m: 0 } }} className="self-end">
           <Fab
             aria-label="add"
@@ -188,7 +188,6 @@ const Home = () => {
             />
           </Fab>
         </Box>
-
         <UrlTable
           data={data}
           isLoading={isLoading}
@@ -203,7 +202,7 @@ const Home = () => {
         disableWindowBlurListener={true}
         preventDuplicate={true}
       />
-      <div className="absolute bottom-2 flex items-center gap-2 text-xs text-gray-800 dark:text-gray-300">
+      {/* <div className="absolute bottom-2 flex items-center gap-2 text-xs text-gray-800 dark:text-gray-300">
         <p>Made with ❤️ in India</p>
         <a
           href="https://github.com/AbhishekCdr/url_shortener"
@@ -212,9 +211,7 @@ const Home = () => {
         >
           <GitHubIcon />
         </a>
-
-        {/* <p>𝐀𝐛𝐡ℹ𝐬𝐡𝐞𝐤</p> */}
-      </div>
+      </div> */}
     </div>
   );
 };
