@@ -87,7 +87,7 @@ export const createCustomUrl = async (req, res) => {
       return res.status(400).json({ error: "Custom URL ID already exists" });
     }
 
-    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.BASE_URL || "srty.vercel.app";
     const shortUrl = `${baseUrl}/${urlId}`;
 
     const newShortUrl = new Urls({
