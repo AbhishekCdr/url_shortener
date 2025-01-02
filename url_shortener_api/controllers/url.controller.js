@@ -36,7 +36,7 @@ export const createShortUrl = async (req, res) => {
       }
     }
 
-    const baseUrl = process.env.BASE_URL || "http://localhost:3000";
+    const baseUrl = "srty.vercel.app";
     const shortUrl = `${baseUrl}/${urlId}`;
 
     const newShortUrl = new Urls({
