@@ -6,7 +6,7 @@ export const ThemeContext = createContext();
 // Create a provider component
 export const ThemeProvider = ({ children }) => {
   const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
-  const url = "http://localhost:3000";
+  const url = "https://srty.vercel.app";
 
   useEffect(() => {
     if (theme === "dark") {

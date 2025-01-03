@@ -168,13 +168,13 @@ const Home = () => {
         <InputField
           fetchData={fetchData}
           setHighlight={setHighlight}
-          cookie={cookie}
+          user={user}
           custom={custom}
           handleCustom={handleCustom}
         />
       </div>
 
-      <div className="flex w-screen flex-col items-center gap-3 p-5">
+      <div className="flex w-screen flex-col items-center gap-3 overflow-auto p-5">
         <Box sx={{ "& > :not(style)": { m: 0 } }} className="self-end">
           <Fab
             aria-label="add"

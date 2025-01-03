@@ -8,7 +8,7 @@ import CustomUrl from "./CustomUrl";
 import { ThemeContext } from "../ThemeContext";
 
 const InputField = (props) => {
-  const { fetchData, setHighlight, cookie, custom, handleCustom } = props;
+  const { fetchData, setHighlight, user, custom, handleCustom } = props;
   const [inputValue, setInputValue] = useState("");
   const [error, setError] = useState("");
   const [buttonDisable, setButtonDisable] = useState(false);
@@ -168,8 +168,15 @@ const InputField = (props) => {
           className="transform bg-gradient-to-r from-purple-500 to-indigo-600 px-4 py-2 font-semibold text-white shadow-lg transition-all duration-200 ease-in-out hover:scale-105 hover:from-purple-600 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50"
           size="large"
         >
-          {custom ? <span> Custom</span> : <span>Shorten</span>}
-          {cookie && (
+          {custom ? (
+            <span> Custom</span>
+          ) : buttonDisable ? (
+            <span>Shortening</span>
+          ) : (
+            <span>Shorten</span>
+          )}
+
+          {user && !user.startsWith("system") && (
             <CustomSwitch
               checked={custom}
               onClick={handleCustom}
