@@ -36,7 +36,7 @@ export const createShortUrl = async (req, res) => {
       }
     }
 
-    const baseUrl = "srty.vercel.app";
+    const baseUrl = "https://srty.vercel.app";
     const shortUrl = `${baseUrl}/${urlId}`;
 
     const newShortUrl = new Urls({
@@ -87,7 +87,7 @@ export const createCustomUrl = async (req, res) => {
       return res.status(400).json({ error: "Custom URL ID already exists" });
     }
 
-    const baseUrl = "srty.vercel.app";
+    const baseUrl = "https://srty.vercel.app";
     const shortUrl = `${baseUrl}/${urlId}`;
 
     const newShortUrl = new Urls({
