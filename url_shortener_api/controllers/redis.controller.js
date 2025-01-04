@@ -103,7 +103,7 @@ export const getRedis = async (req, res) => {
         <ul>
           <li>Double-check the URL and try again.</li>
         </ul>
-        <a href="localhost:5173" class="btn">Go to Homepage</a>
+        <a href="https://short-url-new.vercel.app/" class="btn">Go to Homepage</a>
       </div>
     </body>
     </html>
