@@ -23,7 +23,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "https://short-url-new.vercel.app",
+    origin: true,
     credentials: true,
   })
 );
