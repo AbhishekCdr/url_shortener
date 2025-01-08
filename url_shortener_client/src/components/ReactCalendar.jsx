@@ -1,13 +1,15 @@
 import { Button } from "@mui/material";
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Calendar from "react-calendar";
 import "react-calendar/dist/Calendar.css";
 import { enqueueSnackbar } from "notistack";
+import { ThemeContext } from "../ThemeContext";
 
 function ReactCalendar(props) {
   const [value, setValue] = useState(new Date());
   const [loading, setLoading] = useState(false);
+  const { url } = useContext(ThemeContext);
 
   //   console.log(value.toISOString());
 
@@ -23,7 +25,7 @@ function ReactCalendar(props) {
       };
 
       const response = await axios.patch(
-        `http://localhost:3000/v1/api/url/expiry/${_id}`,
+        `${url}/v1/api/url/expiry/${_id}`,
         payload,
       );
 
